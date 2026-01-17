@@ -38,10 +38,25 @@ export const getUsers = async (c: Context) => {
 };
 
 export const getUserId = async (c: Context) => {
-  const id = c.req.query;
-  const user = users.find((u) => u.id === Number(id));
+  const id = c.req.param("id");
+  const userId = Number(id);
+
+  console.log("Looking for user ID:", userId);
+  console.log("Available users:", users);
+
+  if (!id || isNaN(userId)) {
+    return c.json({ error: "Valid User ID is required" }, 400);
+  }
+
+  const user = users.find((u) => u.id === userId);
+
   if (!user) {
+    console.log(
+      "User not found. Available IDs:",
+      users.map((u) => u.id)
+    ); // Debug
     return c.json({ error: "User not found" }, 404);
   }
-  return c.json({ data: user });
+
+  return c.json({ total_user: users.length, fetch_user_by_id: user });
 };
